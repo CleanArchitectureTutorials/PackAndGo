@@ -18,35 +18,31 @@ public class UserRepository : IUserRepository
    public async Task<User?> GetByIdAsync(Guid id)
    {
        var dataModel = await _context.Users.FindAsync(id);
-       return dataModel == null ? null : new User(dataModel.Id, dataModel.Email);
+       return dataModel == null ? null : dataModel.ToDomain();
    }
 
    public async Task<IEnumerable<User>> GetAllAsync()
    {
-       return await _context.Users
-           .Select(u => new User(u.Id, u.Email))
-           .ToListAsync();
+        return await _context.Users
+            .Select(u => u.ToDomain())
+            .ToListAsync();
    }
 
    public async Task AddAsync(User user)
    {
-       var dataModel = new UserDataModel
-       {
-           Id = user.Id,
-           Email = user.Email
-       };
+       var dataModel = UserDataModel.FromDomain(user);
        _context.Users.Add(dataModel);
        await _context.SaveChangesAsync();
    }
 
    public async Task UpdateAsync(User user)
    {
-       var dataModel = await _context.Users.FindAsync(user.Id);
-       if (dataModel != null)
-       {
-           dataModel.Email = user.Email;
-           await _context.SaveChangesAsync();
-       }
+        var dataModel = await _context.Users.FindAsync(user.Id);
+        if (dataModel != null)
+        {
+            dataModel.Email = user.Email.Value;
+            await _context.SaveChangesAsync();
+        }
    }
 
    public async Task DeleteAsync(Guid id)
