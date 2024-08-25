@@ -2,6 +2,16 @@
 
 <h1>Create User</h1>
 
+@if (!ViewData.ModelState.IsValid)
+{
+  <div>
+      @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+      {
+          <p>@error.ErrorMessage</p>
+      }
+  </div>
+}
+
 <form asp-action="Create" method="post">
   <div>
       <label>Email</label>

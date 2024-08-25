@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PackAndGo.Application.DTOs;
+using PackAndGo.Application.Exceptions;
 using PackAndGo.Application.Interfaces;
 using PackAndGo.Web.Models;
 
@@ -31,10 +32,23 @@ public class UserController : Controller
    {
        if (ModelState.IsValid)
        {
-           var userDto = new UserDTO { Id = Guid.NewGuid(), Email = model.Email };
-           await _userService.AddUserAsync(userDto);
-           return RedirectToAction(nameof(Index));
+            try
+            {
+                var userDto = new UserDTO { Id = Guid.NewGuid(), Email = model.Email };
+                await _userService.AddUserAsync(userDto);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (UserCreationFailedException ex)
+            {
+                var rootCauseMessage = ex.InnerException?.Message ?? "There was an issue creating the user. Please try again.";
+                ModelState.AddModelError("", rootCauseMessage);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+            }
        }
+
        return View(model);
    }
 
@@ -52,10 +66,23 @@ public class UserController : Controller
    {
        if (ModelState.IsValid)
        {
-           var userDto = new UserDTO { Id = model.Id, Email = model.Email };
-           await _userService.UpdateUserAsync(userDto);
-           return RedirectToAction(nameof(Index));
+            try
+            {
+                var userDto = new UserDTO { Id = model.Id, Email = model.Email };
+                await _userService.UpdateUserAsync(userDto);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (UserUpdateFailedException ex)
+            {
+                var rootCauseMessage = ex.InnerException?.Message ?? "There was an issue updating the user. Please try again.";
+                ModelState.AddModelError("", rootCauseMessage);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "An unexpected error occurred. Please try again.");
+            }
        }
+       
        return View(model);
    }
 
