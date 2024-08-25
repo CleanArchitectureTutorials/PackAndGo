@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using PackAndGo.Domain.Common;
+using PackAndGo.Domain.Exceptions;
 
 namespace PackAndGo.Domain.ValueObjects;
 
@@ -10,10 +11,10 @@ public class Email : ValueObject
     public Email(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email address cannot be empty", nameof(email));
+            throw new EmptyEmailException();
 
         if (!IsValidEmail(email))
-            throw new ArgumentException("Email address is invalid", nameof(email));
+            throw new InvalidEmailException(email);
 
         Value = email;
     }
