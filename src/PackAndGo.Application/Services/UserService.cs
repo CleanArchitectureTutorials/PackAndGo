@@ -17,26 +17,30 @@ public class UserService : IUserService
    public async Task<UserDTO?> GetUserByIdAsync(Guid id)
    {
        var user = await _userRepository.GetByIdAsync(id);
-       return user == null ? null : new UserDTO { Id = user.Id, Email = user.Email };
+       return user == null ? null : new UserDTO { Id = user.Id, Email = user.Email.Value };
    }
 
    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
    {
        return (await _userRepository.GetAllAsync())
-           .Select(user => new UserDTO { Id = user.Id, Email = user.Email });
+           .Select(user => new UserDTO { Id = user.Id, Email = user.Email.Value });
    }
 
    public async Task AddUserAsync(UserDTO userDto)
    {
-       var user = new User(userDto.Id, userDto.Email);
+       var user = User.Create(userDto.Email);
        await _userRepository.AddAsync(user);
    }
 
    public async Task UpdateUserAsync(UserDTO userDto)
    {
-       var user = new User(userDto.Id, userDto.Email);
-       await _userRepository.UpdateAsync(user);
-   }
+        // Find the user by id
+         var user = await _userRepository.GetByIdAsync(userDto.Id) ?? throw new Exception("User not found");
+         
+        // Update the user
+        user.ChangeEmail(userDto.Email);
+        await _userRepository.UpdateAsync(user);
+    }
 
    public async Task DeleteUserAsync(Guid id)
    {
