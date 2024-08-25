@@ -353,7 +353,116 @@ public class UserRepository : IUserRepository
 
 ##### Alternative Implementation With Reflection in the DbContext
 
-TODO
+To use reflection directly for the `User` entity within the `DbContext` without relying on a separate `UserDataModel`, you'll need to configure Entity Framework Core to handle the `User` entity and its `Email` value object. This involves configuring how the `Email` value object is mapped to and from the database.
+
+1. **Remove `UserDataModel` and Configure the `User` Entity in `AppDbContext`**
+
+	First, update your `AppDbContext` to work with the `User` entity directly. The key is to use reflection to instantiate the `Email` value object during rehydration.
+	
+	Updated `AppDbContext`:
+	
+	```csharp
+	using Microsoft.EntityFrameworkCore;
+	using PackAndGo.Domain.Entities;
+	using PackAndGo.Domain.ValueObjects;
+	
+	namespace PackAndGo.Infrastructure.Persistence;
+	
+	public class AppDbContext : DbContext
+	{
+	    public DbSet<User> Users { get; set; }
+	
+	    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+	
+	    protected override void OnModelCreating(ModelBuilder modelBuilder)
+	    {
+	        // Configure User entity
+	        modelBuilder.Entity<User>()
+	            .Property(u => u.Email)
+	            .HasConversion(
+	                v => v.Value,
+	                v => new Email(v)
+	            );
+	
+	        // Optionally seed data directly as User entities
+	        modelBuilder.Entity<User>().HasData(
+	            User.Create("john.doe@test.com"),
+	            User.Create("jane.doe@test.com"),
+	            User.Create("jacob.doe@test.com")
+	        );
+	    }
+	}
+	```
+	
+	**Explanation**
+	
+	- **Reflection**: The `HasConversion` method is used to convert the `Email` value object to and from a string representation. When reading from the database, `Activator.CreateInstance` is used with reflection to call the private constructor of the `Email` value object.
+	- **Seeding Data**: The `HasData` method seeds data directly using the `User.Create` method, ensuring that the domain logic is respected even for seed data.
+
+2. **Update the `UserRepository`**
+	
+	Since we're no longer using `UserDataModel`, the `UserRepository` will work directly with the `User` entity.
+	
+	Updated `UserRepository`:
+	
+	```csharp
+	using Microsoft.EntityFrameworkCore;
+	using PackAndGo.Domain.Entities;
+	using PackAndGo.Domain.Repositories;
+	using PackAndGo.Infrastructure.Persistence;
+	
+	namespace PackAndGo.Infrastructure.Repositories;
+	
+	public class UserRepository : IUserRepository
+	{
+	    private readonly AppDbContext _context;
+	
+	    public UserRepository(AppDbContext context)
+	    {
+	        _context = context;
+	    }
+	
+	    public async Task<User?> GetByIdAsync(Guid id)
+	    {
+	        return await _context.Users.FindAsync(id);
+	    }
+	
+	    public async Task<IEnumerable<User>> GetAllAsync()
+	    {
+	        return await _context.Users.ToListAsync();
+	    }
+	
+	    public async Task AddAsync(User user)
+	    {
+	        _context.Users.Add(user);
+	        await _context.SaveChangesAsync();
+	    }
+	
+	    public async Task UpdateAsync(User user)
+	    {
+	        _context.Users.Update(user);
+	        await _context.SaveChangesAsync();
+	    }
+	
+	    public async Task DeleteAsync(Guid id)
+	    {
+	        var user = await _context.Users.FindAsync(id);
+	        if (user != null)
+	        {
+	            _context.Users.Remove(user);
+	            await _context.SaveChangesAsync();
+	        }
+	    }
+	}
+	```
+	
+	**Explanation**
+	
+	- **Direct Entity Handling**: The repository now directly works with `User` entities, simplifying the code by removing the need for `UserDataModel`.
+	- **Update and Delete**: EF Core will track changes to the entity, so calling `Update` or `Remove` on the entity is sufficient.
+	
+	
+	With this approach, you've streamlined your codebase by removing the intermediate `UserDataModel` and relying directly on the domain `User` entity. Reflection is used to ensure that the `Email` value object is correctly instantiated during rehydration from the database, preserving the encapsulated logic within the `Email` class. This approach maintains the integrity of your domain model while leveraging EF Core's capabilities to manage database interactions.
 
 #### Web Layer
 
