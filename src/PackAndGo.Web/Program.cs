@@ -1,7 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+using PackAndGo.Application.Interfaces;
+using PackAndGo.Application.Services;
+using PackAndGo.Domain.Repositories;
+using PackAndGo.Infrastructure.Persistence;
+using PackAndGo.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register the DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+  options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Register services
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

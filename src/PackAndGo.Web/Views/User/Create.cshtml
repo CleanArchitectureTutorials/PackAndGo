@@ -1,0 +1,17 @@
+@model PackAndGo.Web.Models.UserViewModel
+
+<h1>Create User</h1>
+
+<form asp-action="Create" method="post">
+  <div>
+      <label>Email</label>
+      <input asp-for="Email" />
+  </div>
+  <div>
+      <input type="submit" value="Create" />
+  </div>
+</form>
+
+<p>
+  <a href="@Url.Action("Index")">Back to List</a>
+</p>

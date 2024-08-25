@@ -1,0 +1,28 @@
+@model IEnumerable<PackAndGo.Web.Models.UserViewModel>
+
+<h1>Users</h1>
+
+<p>
+  <a href="@Url.Action("Create")">Create New User</a>
+</p>
+
+<table>
+  <thead>
+      <tr>
+          <th>Email</th>
+          <th></th>
+      </tr>
+  </thead>
+  <tbody>
+      @foreach (var user in Model)
+      {
+          <tr>
+              <td>@user.Email</td>
+              <td>
+                  <a href="@Url.Action("Edit", new { id = user.Id })">Edit</a> |
+                  <a href="@Url.Action("Delete", new { id = user.Id })">Delete</a>
+              </td>
+          </tr>
+      }
+  </tbody>
+</table>

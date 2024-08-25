@@ -1,0 +1,15 @@
+@model PackAndGo.Web.Models.UserViewModel
+
+<h1>Delete User</h1>
+
+<form asp-action="Delete" method="post">
+  <input type="hidden" asp-for="Id" />
+  <p>Are you sure you want to delete this user: @Model.Email?</p>
+  <div>
+      <input type="submit" value="Delete" />
+  </div>
+</form>
+
+<p>
+  <a href="@Url.Action("Index")">Back to List</a>
+</p>
