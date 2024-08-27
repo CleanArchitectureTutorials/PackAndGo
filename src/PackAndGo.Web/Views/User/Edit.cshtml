@@ -5,24 +5,29 @@
 @if (!ViewData.ModelState.IsValid)
 {
   <div>
-      @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-      {
-          <p>@error.ErrorMessage</p>
-      }
+    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+    {
+      <p>@error.ErrorMessage</p>
+    }
   </div>
 }
 
 <form asp-action="Edit" method="post">
   <input type="hidden" asp-for="Id" />
   <div>
-      <label>Email</label>
-      <input asp-for="Email" />
+    <label asp-for="Email"></label>
+    <input asp-for="Email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
   </div>
   <div>
-      <input type="submit" value="Save" />
+    <input type="submit" value="Save" class="btn btn-primary" />
   </div>
 </form>
 
 <p>
   <a href="@Url.Action("Index")">Back to List</a>
 </p>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
