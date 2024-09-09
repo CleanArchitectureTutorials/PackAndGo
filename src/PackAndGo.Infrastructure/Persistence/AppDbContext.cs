@@ -6,6 +6,8 @@ namespace PackAndGo.Infrastructure.Persistence;
 public class AppDbContext : DbContext
 {
    public DbSet<UserDataModel> Users { get; set; }
+    public DbSet<PackingListDataModel> PackingLists { get; set; }
+    public DbSet<ItemDataModel> Items { get; set; }
 
    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
