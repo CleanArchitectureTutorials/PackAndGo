@@ -6,6 +6,9 @@ using PackAndGo.Domain.Repositories;
 using PackAndGo.Infrastructure.Persistence;
 using PackAndGo.Infrastructure.Repositories;
 using PackAndGo.Infrastructure.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using PackAndGo.Application.Interfaces;
+using PackAndGo.Infrastructure.Security;
 
 namespace PackAndGo.Infrastructure.Configuration;
 
@@ -24,5 +27,13 @@ public static class ServiceRegistration
         });
 
         services.AddScoped<IUserRepository, UserRepository>();
+
+        // Add authentication services
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	        .AddCookie();
+
+        services.AddHttpContextAccessor();
+
+        services.AddScoped<IAuthService, CookieAuthService>();
     }
 }

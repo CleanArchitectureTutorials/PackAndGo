@@ -1,0 +1,27 @@
+@model PackAndGo.Web.Models.LoginViewModel
+
+<h2>Login</h2>
+
+<form asp-action="Login" asp-controller="Account" method="post" asp-antiforgery="true">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div>
+        <label asp-for="Email">Email:</label>
+        <input type="text" id="Email" asp-for="Email" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Password">Password:</label>
+        <input type="password" id="Password" asp-for="Password" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div>
+        <button type="submit">Login</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
