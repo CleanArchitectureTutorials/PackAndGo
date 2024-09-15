@@ -60,15 +60,15 @@ namespace PackAndGo.Infrastructure.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Email" },
-                values: new object[,]
-                {
-                    { new Guid("097498c7-66ad-4a1f-b1a4-0843e89a78e2"), "john.doe@test.com" },
-                    { new Guid("0c0e1af3-d9aa-4b86-a41b-fb44cdb685a4"), "jane.doe@test.com" },
-                    { new Guid("5458a1ce-d74f-42d8-b83d-b917cc21a8f9"), "jacob.doe@test.com" }
-                });
+            // migrationBuilder.InsertData(
+            //     table: "Users",
+            //     columns: new[] { "Id", "Email" },
+            //     values: new object[,]
+            //     {
+            //         { new Guid("097498c7-66ad-4a1f-b1a4-0843e89a78e2"), "john.doe@test.com" },
+            //         { new Guid("0c0e1af3-d9aa-4b86-a41b-fb44cdb685a4"), "jane.doe@test.com" },
+            //         { new Guid("5458a1ce-d74f-42d8-b83d-b917cc21a8f9"), "jacob.doe@test.com" }
+            //     });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_PackingListDataModelId",

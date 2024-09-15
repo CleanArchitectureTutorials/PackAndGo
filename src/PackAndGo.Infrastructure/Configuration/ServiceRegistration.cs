@@ -9,6 +9,7 @@ using PackAndGo.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using PackAndGo.Application.Interfaces;
 using PackAndGo.Infrastructure.Security;
+using Microsoft.AspNetCore.Identity;
 
 namespace PackAndGo.Infrastructure.Configuration;
 
@@ -26,6 +27,10 @@ public static class ServiceRegistration
             options.UseSqlite(databaseOptions.DefaultConnection);
         });
 
+        services.AddIdentityCore<IdentityUser>()
+            .AddEntityFrameworkStores<AppDbContext>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
 
         // Add authentication services

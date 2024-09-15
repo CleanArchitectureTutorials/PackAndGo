@@ -17,13 +17,13 @@ public class UserRepository : IUserRepository
 
    public async Task<User?> GetByIdAsync(Guid id)
    {
-       var dataModel = await _context.Users.FindAsync(id);
+       var dataModel = await _context.DomainUsers.FindAsync(id);
        return dataModel == null ? null : dataModel.ToDomain();
    }
 
    public async Task<IEnumerable<User>> GetAllAsync()
    {
-        return await _context.Users
+        return await _context.DomainUsers
             .Select(u => u.ToDomain())
             .ToListAsync();
    }
@@ -31,27 +31,27 @@ public class UserRepository : IUserRepository
    public async Task AddAsync(User user)
    {
        var dataModel = UserDataModel.FromDomain(user);
-       _context.Users.Add(dataModel);
-       await _context.SaveChangesAsync();
+       _context.DomainUsers.Add(dataModel);
+       // await _context.SaveChangesAsync(); Handled by UnitOfWork
    }
 
    public async Task UpdateAsync(User user)
    {
-        var dataModel = await _context.Users.FindAsync(user.Id);
+        var dataModel = await _context.DomainUsers.FindAsync(user.Id);
         if (dataModel != null)
         {
             dataModel.Email = user.Email.Value;
-            await _context.SaveChangesAsync();
+            // await _context.SaveChangesAsync(); Handled by UnitOfWork
         }
    }
 
    public async Task DeleteAsync(Guid id)
    {
-       var dataModel = await _context.Users.FindAsync(id);
+       var dataModel = await _context.DomainUsers.FindAsync(id);
        if (dataModel != null)
        {
-           _context.Users.Remove(dataModel);
-           await _context.SaveChangesAsync();
+           _context.DomainUsers.Remove(dataModel);
+           // await _context.SaveChangesAsync(); Handled by UnitOfWork
        }
    }
 }
